@@ -1,4 +1,4 @@
-## QEMU microcheckpointing
+## QEMU microcheckpointing (Ubuntu 14.04.1)
 
 ### Summary
 This is an implementation of Micro Checkpointing for memory and cpu state.
@@ -42,12 +42,16 @@ $ git checkout 'mc'
 $ ./configure --enable-mc [other options]
 ```
 Next, start the VM that you want to protect using your standard procedures.
+```
+cheng@cheng-OptiPlex-9020:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 ~/newvm/tmpKcGC7l.qcow2 -m 2048 -smp 4 -net nic,model=e1000 -net tap,ifname=tap0,script=/etc/qemu-ifup,downscript=no
+```
+
 Enable MC like this:  
 QEMU Monitor Command:
 ```
 $ migrate_set_capability mc on # disabled by default
 ```
-Currently, only one network interface is supported, \*and* currently you must ensure that the root 
+Currently, only one network interface is supported, \*and\* currently you must ensure that the root 
 disk of your VM is booted either directly from iSCSI or NFS, as described previously. This will be 
 rectified with future improvements.  
 For testing only, you can ignore the aforementioned requirements if you simply want to get an understanding 
@@ -57,4 +61,55 @@ but they don't work yet, so you have to explicitly set this:
 QEMU Monitor Command:
 ```
 $ migrate_set_capability mc-disk-disable on # disk replication activated by default
+```
+Next, you can optionally disable network-buffering for additional test-only execution. This is useful if you 
+want to get a breakdown only of what the cost of checkpointing the memory state is without the cost of checkpointing 
+device state.  
+QEMU Monitor Command:
+```
+$ migrate_set_capability mc-net-disable on # buffering activated by default
+```
+Additionally, you can tune the checkpoint frequency. By default it is set to checkpoint every 100 milliseconds. You can change that at any time, like this:  
+QEMU Monitor Command:
+```
+$ migrate-set-mc-delay 100 # checkpoint every 100 milliseconds
+```
+#### libnl / NETLINK compatibility
+Unfortunately, You cannot just install any version of libnl, as we depend on a recently introduced feature from 
+Xen Remus into libnl called "Qdisc Plugs" which perform the network buffering functions of micro-checkpointing 
+in the host linux kernel.  
+As of today, the minimum version you would need from my Ubuntu system would be the following packages
+```
+libnl-3-200_3.2.16-0ubuntu1_amd64.deb
+libnl-3-dev_3.2.16-0ubuntu1_amd64.deb
+libnl-cli-3-200_3.2.16-0ubuntu1_amd64.deb
+libnl-cli-3-dev_3.2.16-0ubuntu1_amd64.deb
+libnl-genl-3-200_3.2.16-0ubuntu1_amd64.deb
+libnl-genl-3-dev_3.2.16-0ubuntu1_amd64.deb
+libnl-nf-3-200_3.2.16-0ubuntu1_amd64.deb
+libnl-nf-3-dev_3.2.16-0ubuntu1_amd64.deb
+libnl-route-3-200_3.2.16-0ubuntu1_amd64.deb
+libnl-route-3-dev_3.2.16-0ubuntu1_amd64.deb
+libnl-utils_3.2.16-0ubuntu1_amd64.deb
+```
+#### Running
+First, make sure the IFB device kernel module is loaded
+```
+cheng@cheng-OptiPlex-9020:~$ sudo modprobe ifb numifbs=100 # (or some large number)
+```
+Now, install a Qdisc plug to the tap device using the same naming convention as the tap device created by QEMU (it must be the same, because QEMU needs to interact with the IFB device and the only mechanism we have right now of knowing the name of the IFB devices is to assume that it matches the tap device numbering scheme):
+```
+cheng@cheng-OptiPlex-9020:~$ sudo ip link set up ifb0 # <= corresponds to tap device 'tap0'
+cheng@cheng-OptiPlex-9020:~$ sudo tc qdisc add dev tap0 ingress
+cheng@cheng-OptiPlex-9020:~$ sudo tc filter add dev tap0 parent ffff: proto ip pref 10 u32 match u32 0 0 action mirred egress redirect dev ifb0
+```
+Start the VM on the backup host
+```
+wang@wang-HP-Compaq-Elite-8300-SFF:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 ~/newvm/tmpKcGC7l.qcow2 -m 2048 -smp 4 -net nic,model=e1000 -net tap,ifname=tap0,script=/etc/qemu-ifup,downscript=no -incoming tcp:0:6666
+```
+
+MC can be initiated with exactly the same command as standard live migration:  
+QEMU Monitor Command:
+```
+$ migrate tcp:147.8.179.243:6666
 ```
