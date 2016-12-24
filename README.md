@@ -30,17 +30,6 @@ iface eth0 inet manual
 #
 ```
 
-NFS
-```
-hkucs-PowerEdge-R430-1:~$ vi /etc/exports
-#
-/ubuntu  *(rw,sync,no_root_squash)
-#
-hkucs-PowerEdge-R430-1:~$ service nfs-kernel-server restart
-
-HP-Compaq-Elite-8300-SFF:~$ sudo mount 202.45.128.160:/ubuntu /local/ubuntu
-```
-
 First, compile QEMU with '--enable-mc' and ensure that the corresponding libraries for netlink (libnl3) are available.
 ```
 HP-Compaq-Elite-8300-SFF:~$ git clone http://github.com/hinesmr/qemu.git
@@ -51,6 +40,17 @@ HP-Compaq-Elite-8300-SFF:~$ ./configure --enable-mc [other options, like --disab
 Create a virtual machine
 ```
 hkucs-poweredge-r430-1:~$ sudo ubuntu-vm-builder kvm precise --domain newvm --dest newvm --hostname hostnameformyvm --arch amd64 --mem 2048 --cpus 4 --user cheng --pass cheng --components main,universe --addpkg acpid --addpkg openssh-server --addpkg=linux-image-generic --libvirt qemu:///system ;
+```
+
+NFS
+```
+hkucs-PowerEdge-R430-1:~$ vi /etc/exports
+#
+/ubuntu  *(rw,sync,no_root_squash)
+#
+hkucs-PowerEdge-R430-1:~$ service nfs-kernel-server restart
+
+HP-Compaq-Elite-8300-SFF:~$ sudo mount 202.45.128.160:/ubuntu /local/ubuntu
 ```
 
 Next, start the VM that you want to protect using your standard procedures.
