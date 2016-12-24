@@ -116,5 +116,5 @@ cheng@hkucs-PowerEdge-R430-3:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 /loc
 MC can be initiated with exactly the same command as standard live migration:  
 QEMU Monitor Command:
 ```
-migrate tcp:147.8.179.243:6666
+migrate tcp:10.22.1.3:6666
 ```
