@@ -38,8 +38,7 @@ hkucs-PowerEdge-R430-1:~$ vi /etc/exports
 #
 hkucs-PowerEdge-R430-1:~$ service nfs-kernel-server restart
 
-cheng@cheng-HP-Compaq-Elite-8300-SFF:~$ sudo mount 202.45.128.160:/ubuntu /local/ubuntu
-wang@wang-HP-Compaq-Elite-8300-SFF:~$ sudo mount 202.45.128.160:/ubuntu /local/ubuntu
+HP-Compaq-Elite-8300-SFF:~$ sudo mount 202.45.128.160:/ubuntu /local/ubuntu
 ```
 
 First, compile QEMU with '--enable-mc' and ensure that the corresponding libraries for netlink (libnl3) are available.
