@@ -38,7 +38,7 @@ Create a virtual machine
 cheng@hkucs-poweredge-r430-1:~$ sudo ubuntu-vm-builder kvm precise --domain newvm --dest newvm --hostname hostnameformyvm --arch amd64 --mem 2048 --cpus 4 --user cheng --pass cheng --bridge br0 --ip 10.22.1.11 --mask 255.255.255.0 --net 10.22.1.0 --bcast 10.22.1.255 --components main,universe --addpkg acpid --addpkg openssh-server --addpkg=linux-image-generic --libvirt qemu:///system ;
 ```
 ```
-cheng@hkucs-PowerEdge-R430-1:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 ~/newvm/ -m 2048 -smp 4 -net nic,model=e1000 -net tap,ifname=tap0,script=/etc/qemu-ifup,downscript=no
+cheng@hkucs-PowerEdge-R430-1:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 newvm/tmpa_9xeS.qcow2 -m 2048 -smp 4 -vnc :7 -net nic,model=e1000 -net tap,ifname=tap0,script=/etc/qemu-ifup,downscript=no
 cheng@hkucs-PowerEdge-R430-1:~$ ssh 10.22.1.11
 cheng@hostnameformyvm:$ cat /etc/apt/apt.conf
 Acquire::http::proxy "http://10.22.1.1:3128";
@@ -48,11 +48,11 @@ Acquire::ftp::proxy "http://10.22.1.1:3128";
 
 Next, start the VM that you want to protect using your standard procedures.
 ```
-cheng@hkucs-PowerEdge-R430-2:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 ~/newvm/ -m 2048 -smp 4 -net nic,model=e1000 -net tap,ifname=tap0,script=/etc/qemu-ifup,downscript=no
+cheng@hkucs-PowerEdge-R430-2:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 /local/ubuntu/tmpa_9xeS.qcow2 -m 2048 -smp 4 -vnc :7 -net nic,model=e1000 -net tap,ifname=tap0,script=/etc/qemu-ifup,downscript=no
 ```
 
 Enable MC like this:  
-QEMU Monitor Command:
+QEMU Monitor Command (TigerVNC 202.45.128.161:7):
 ```
 migrate_set_capability mc on # disabled by default
 ```
@@ -110,7 +110,7 @@ cheng@hkucs-PowerEdge-R430-2:~$ sudo tc filter add dev tap0 parent ffff: proto i
 ```
 Start the VM on the backup host
 ```
-cheng@hkucs-PowerEdge-R430-3:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 ~/newvm/tmpKcGC7l.qcow2 -m 2048 -smp 4 -net nic,model=e1000 -net tap,ifname=tap0,script=/etc/qemu-ifup,downscript=no -incoming tcp:0:6666
+cheng@hkucs-PowerEdge-R430-3:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 /local/ubuntu/tmpa_9xeS.qcow2 -m 2048 -smp 4 -vnc :7 -net nic,model=e1000 -net tap,ifname=tap0,script=/etc/qemu-ifup,downscript=no -incoming tcp:0:6666
 ```
 
 MC can be initiated with exactly the same command as standard live migration:  
