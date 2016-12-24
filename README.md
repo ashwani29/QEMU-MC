@@ -39,7 +39,7 @@ First, compile QEMU with '--enable-mc' and ensure that the corresponding librari
 ```
 $ git clone http://github.com/hinesmr/qemu.git
 $ git checkout 'mc'
-$ ./configure --enable-mc [other options]
+$ ./configure --enable-mc [other options, like --disable-werror]
 ```
 Next, start the VM that you want to protect using your standard procedures.
 ```
@@ -105,7 +105,7 @@ cheng@cheng-HP-Compaq-Elite-8300-SFF:~$ sudo tc filter add dev tap0 parent ffff:
 ```
 Start the VM on the backup host
 ```
-wang@wang-HP-Compaq-Elite-8300-SFF:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 ~/newvm/tmpKcGC7l.qcow2 -m 2048 -smp 4 -net nic,model=e1000 -net tap,ifname=tap0,script=/etc/qemu-ifup,downscript=no -incoming tcp:0:6666
+wang@wang-HP-Compaq-Elite-8300-SFF:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 ~/newvm/tmpKcGC7l.qcow2 -m 2048 -smp 4 -net nic,macaddr=18:66:da:03:15:b1,model=e1000 -net tap,ifname=tap0,script=/etc/qemu-ifup,downscript=no -incoming tcp:0:6666
 ```
 
 MC can be initiated with exactly the same command as standard live migration:  
