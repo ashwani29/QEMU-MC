@@ -15,9 +15,6 @@ granularity of 10s of milliseconds and perform the following steps:
 5. Transmit the checkpoint to the destination.
 6. Repeat
 ```
-Upon failure, load the contents of the last MC at the destination back into memory and run the VM normally. 
-#### I/O buffering 
-This implementation \*currently\* only supports buffering for the network. Due to this lack of disk support, this requires that the VM's root disk or any non-ephemeral disks also be made network-accessible directly from within the VM. Until the aforementioned buffering or mirroring support is available (ideally through drive-mirror), the only "consistent" way to provide full fault tolerance of the VM's non-ephemeral disks is to construct a VM whose root disk is made to boot directly from iSCSI or NFS or similar such that all disk I/O is translated into network I/O.
 
 ### Usage
 #### BEFORE Running
