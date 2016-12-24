@@ -43,7 +43,7 @@ $ ./configure --enable-mc [other options]
 ```
 Next, start the VM that you want to protect using your standard procedures.
 ```
-cheng@cheng-OptiPlex-9020:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 ~/newvm/tmpKcGC7l.qcow2 -m 2048 -smp 4 -net nic,model=e1000 -net tap,ifname=tap0,script=/etc/qemu-ifup,downscript=no
+cheng@cheng-HP-Compaq-Elite-8300-SFF:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 ~/newvm/tmpKcGC7l.qcow2 -m 2048 -smp 4 -net nic,macaddr=18:66:da:03:15:b1,model=e1000 -net tap,ifname=tap0,script=/etc/qemu-ifup,downscript=no
 ```
 
 Enable MC like this:  
@@ -95,13 +95,13 @@ libnl-utils_3.2.16-0ubuntu1_amd64.deb
 #### Running
 First, make sure the IFB device kernel module is loaded
 ```
-cheng@cheng-OptiPlex-9020:~$ sudo modprobe ifb numifbs=100 # (or some large number)
+cheng@cheng-HP-Compaq-Elite-8300-SFF:~$ sudo modprobe ifb numifbs=100 # (or some large number)
 ```
 Now, install a Qdisc plug to the tap device using the same naming convention as the tap device created by QEMU (it must be the same, because QEMU needs to interact with the IFB device and the only mechanism we have right now of knowing the name of the IFB devices is to assume that it matches the tap device numbering scheme):
 ```
-cheng@cheng-OptiPlex-9020:~$ sudo ip link set up ifb0 # <= corresponds to tap device 'tap0'
-cheng@cheng-OptiPlex-9020:~$ sudo tc qdisc add dev tap0 ingress
-cheng@cheng-OptiPlex-9020:~$ sudo tc filter add dev tap0 parent ffff: proto ip pref 10 u32 match u32 0 0 action mirred egress redirect dev ifb0
+cheng@cheng-HP-Compaq-Elite-8300-SFF:~$ sudo ip link set up ifb0 # <= corresponds to tap device 'tap0'
+cheng@cheng-HP-Compaq-Elite-8300-SFF:~$ sudo tc qdisc add dev tap0 ingress
+cheng@cheng-HP-Compaq-Elite-8300-SFF:~$ sudo tc filter add dev tap0 parent ffff: proto ip pref 10 u32 match u32 0 0 action mirred egress redirect dev ifb0
 ```
 Start the VM on the backup host
 ```
