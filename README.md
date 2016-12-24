@@ -44,13 +44,9 @@ wang@wang-HP-Compaq-Elite-8300-SFF:~$ sudo mount 202.45.128.160:/ubuntu /local/u
 
 First, compile QEMU with '--enable-mc' and ensure that the corresponding libraries for netlink (libnl3) are available.
 ```
-cheng@cheng-HP-Compaq-Elite-8300-SFF:~$ git clone http://github.com/hinesmr/qemu.git
-cheng@cheng-HP-Compaq-Elite-8300-SFF:~$ git checkout 'mc'
-cheng@cheng-HP-Compaq-Elite-8300-SFF:~$ ./configure --enable-mc [other options, like --disable-werror]
-
-wang@wang-HP-Compaq-Elite-8300-SFF:~$ git clone http://github.com/hinesmr/qemu.git
-wang@wang-HP-Compaq-Elite-8300-SFF:~$ git checkout 'mc'
-wang@wang-HP-Compaq-Elite-8300-SFF:~$ ./configure --enable-mc [other options, like --disable-werror]
+HP-Compaq-Elite-8300-SFF:~$ git clone http://github.com/hinesmr/qemu.git
+HP-Compaq-Elite-8300-SFF:~$ git checkout 'mc'
+HP-Compaq-Elite-8300-SFF:~$ ./configure --enable-mc [other options, like --disable-werror]
 ```
 
 Create a virtual machine
