@@ -21,7 +21,7 @@
 
 # variables
 APP_VER=2.6.5
-APP_DIR=$MSMR_ROOT/apps/mongodb
+APP_DIR=$QEMU_MC/apps/mongodb
 NUMCPU=`nproc`
 
 # working folder
