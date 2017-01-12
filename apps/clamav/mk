@@ -1,0 +1,42 @@
+#!/bin/bash
+
+VER=0.98.6
+
+cd $QEMU_MC/apps/clamav
+rm clamav-$VER install database *.conf* -rf
+
+if [ ! -f clamav-$VER.tar.gz ]; then
+wget https://distfiles.macports.org/clamav/clamav-$VER.tar.gz
+fi
+tar zxvf clamav-$VER.tar.gz
+mkdir database
+
+cd clamav-$VER
+./configure --prefix=$QEMU_MC/apps/clamav/install \
+	--with-dbdir=$$QEMU_MC/apps/clamav/install/database
+make -j`nproc`
+make install
+
+cd $QEMU_MC/apps/clamav
+# sed '/pattern/d' file
+# remove any lines matching the pattern
+sed '/Example/d' install/etc/freshclam.conf.sample > freshclam.conf
+sed '/Example/d' install/etc/clamd.conf.sample > clamd.conf
+CURPATH=`echo $QEMU_MC`/apps/clamav
+DBPATH=$CURPATH/database
+echo "DatabaseDirectory $DBPATH" >> freshclam.conf
+echo "LogFile $CURPATH/server.log" >> clamd.conf
+echo "DatabaseDirectory $DBPATH" >> clamd.conf
+echo "TCPSocket 7000" >> clamd.conf
+echo "TCPAddr 127.0.0.1" >> clamd.conf
+echo "LogVerbose yes" >> clamd.conf
+echo "Foreground yes" >> clamd.conf
+
+# Prepare database
+echo "Initiliazing clamav database..."
+# freshclam - update virus databases
+./install/bin/freshclam --config-file=./freshclam.conf
+
+echo "Generating client conf with ports 7000 and 9000..."
+./generate-client-conf lo 7000
+./generate-client-conf eth0 9000
