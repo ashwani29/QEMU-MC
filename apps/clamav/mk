@@ -28,7 +28,12 @@ echo "DatabaseDirectory $DBPATH" >> freshclam.conf
 echo "LogFile $CURPATH/server.log" >> clamd.conf
 echo "DatabaseDirectory $DBPATH" >> clamd.conf
 echo "TCPSocket 7000" >> clamd.conf
+
+# By default we bind to INADDR_ANY, probably not wise.
+# Enable the following to provide some degree of protection
+# from the outside world.
 echo "TCPAddr 127.0.0.1" >> clamd.conf
+
 echo "LogVerbose yes" >> clamd.conf
 echo "Foreground yes" >> clamd.conf
 

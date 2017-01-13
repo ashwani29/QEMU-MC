@@ -22,6 +22,10 @@ echo "TCPSocket $1" >> client.conf
 # We only need one client because the clamd server will spawn 10 threads to scan files parallelly.
 CUR_DIR=`pwd`
 # clamdscan - scan files and directories for viruses using Clam AntiVirus Daemon (clamd)
+# OPTIONS
+#        -m, --multiscan
+#               In the multiscan mode clamd will attempt to scan  the  directory
+#               contents  in  parallel  using  available threads.
 $CUR_DIR/install/bin/clamdscan --config-file=./client.conf \
         -m $CUR_DIR/install/*
 
