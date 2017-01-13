@@ -43,60 +43,58 @@ Enable the following in checkpoint.c to enter debug mode
 Primary:
 ```
 mc: iov # 0, len: 32768
-mc: Copying to 0x7f2882e94020 from 0x7f299c4a6630, size 32768
+mc: Copying to 0x7fd832bf7020 from 0x7fd94c4a6630, size 32768
 mc: put: 32768 len: 0 total 32768 size: 32768 slab 0
 mc: iov # 0, len: 32768
-mc: Copying to 0x7f2882e9c020 from 0x7f299c4a6630, size 32768
+mc: Copying to 0x7fd832bff020 from 0x7fd94c4a6630, size 32768
 mc: put: 32768 len: 0 total 65536 size: 65536 slab 0
 mc: iov # 0, len: 32768
-mc: Copying to 0x7f2882ea4020 from 0x7f299c4a6630, size 32768
+mc: Copying to 0x7fd832c07020 from 0x7fd94c4a6630, size 32768
 mc: put: 32768 len: 0 total 98304 size: 98304 slab 0
 mc: iov # 0, len: 32768
-mc: Copying to 0x7f2882eac020 from 0x7f299c4a6630, size 32768
+mc: Copying to 0x7fd832c0f020 from 0x7fd94c4a6630, size 32768
 mc: put: 32768 len: 0 total 131072 size: 131072 slab 0
 mc: iov # 0, len: 32768
-mc: Copying to 0x7f2882eb4020 from 0x7f299c4a6630, size 32768
+mc: Copying to 0x7fd832c17020 from 0x7fd94c4a6630, size 32768
 mc: put: 32768 len: 0 total 163840 size: 163840 slab 0
 mc: iov # 0, len: 32768
-mc: Copying to 0x7f2882ebc020 from 0x7f299c4a6630, size 32768
+mc: Copying to 0x7fd832c1f020 from 0x7fd94c4a6630, size 32768
 mc: put: 32768 len: 0 total 196608 size: 196608 slab 0
 mc: iov # 0, len: 32768
-mc: Copying to 0x7f2882ec4020 from 0x7f299c4a6630, size 32768
+mc: Copying to 0x7fd832c27020 from 0x7fd94c4a6630, size 32768
 mc: put: 32768 len: 0 total 229376 size: 229376 slab 0
-mc: iov # 0, len: 6592
-mc: Copying to 0x7f2882ecc020 from 0x7f299c4a6630, size 6592
-mc: put: 6592 len: 0 total 235968 size: 235968 slab 0
+mc: iov # 0, len: 4488
+mc: Copying to 0x7fd832c2f020 from 0x7fd94c4a6630, size 4488
+mc: put: 4488 len: 0 total 233864 size: 233864 slab 0
 mc: Copyset identifiers complete. Copying memory from 1 copysets...
 mc: Adding to existing slab: 2 slabs total, 10 MB
 mc: Found copyset slab @ idx 1
-mc: copyset 0 copies: 329 total: 329
-mc: Copying to 0x7f2882993010 from 0x7f288d12d000, size 4096
-mc: put: 4096 len: 0 total 240064 size: 4096 slab 1
+mc: copyset 0 copies: 66 total: 66
+mc: Copying to 0x7fd8326f6010 from 0x7fd835c00000, size 4096
+mc: put: 4096 len: 0 total 237960 size: 4096 slab 1
 mc: Success copyset 0 index 0
-mc: Copying to 0x7f2882994010 from 0x7f288d14a000, size 4096
-mc: put: 4096 len: 0 total 244160 size: 8192 slab 1
+mc: Copying to 0x7fd8326f7010 from 0x7fd835c01000, size 4096
+mc: put: 4096 len: 0 total 242056 size: 8192 slab 1
 mc: Success copyset 0 index 1
-mc: Copying to 0x7f2882995010 from 0x7f288d16f000, size 4096
-mc: put: 4096 len: 0 total 248256 size: 12288 slab 1
+mc: Copying to 0x7fd8326f8010 from 0x7fd835c04000, size 4096
+mc: put: 4096 len: 0 total 246152 size: 12288 slab 1
 mc: Success copyset 0 index 2
 ...
-mc: Success copyset 0 index 327
-mc: Copying to 0x7f2882adb010 from 0x7f298bffc000, size 4096
-mc: put: 4096 len: 0 total 1583552 size: 1347584 slab 1
-mc: Success copyset 0 index 328
-mc: Copy complete: 329 pages
+mc: Copying to 0x7fd832737010 from 0x7fd933f8d000, size 4096
+mc: put: 4096 len: 0 total 504200 size: 270336 slab 1
+mc: Success copyset 0 index 65
+mc: Copy complete: 66 pages
 mc: transaction: sent: START (301)
-mc: Sending checkpoint size 1583552 copyset start: 1 nb slab 2 used slabs 2
+mc: Sending checkpoint size 504200 copyset start: 1 nb slab 2 used slabs 2
 mc: Transaction commit
-mc: Attempting write to slab #0: 0x7f2882e94020 total size: 235968 / 5242880
+mc: Attempting write to slab #0: 0x7fd832bf7020 total size: 233864 / 5242880
 mc: transaction: sent: COMMIT (302)
-mc: Sent idx 0 slab size 235968 all 1583552
-mc: Attempting write to slab #1: 0x7f2882993010 total size: 1347584 / 5242880
-mc: Sent idx 1 slab size 1347584 all 1583552
+mc: Sent idx 0 slab size 233864 all 504200
+mc: Attempting write to slab #1: 0x7fd8326f6010 total size: 270336 / 5242880
+mc: Sent idx 1 slab size 270336 all 504200
 mc: Waiting for commit ACK
 mc: transaction: recv: ACK (304)
 mc: Memory transfer complete.
-mc: bytes 1583552 xmit_mbps 83.3 xmit_time 152 downtime 7 sync_time 0 logdirty_time 0 ram_copy_time 3 copy_mbps 4222.8 wait time 993 checkpoints 5
 ```
 
 ### Usage
