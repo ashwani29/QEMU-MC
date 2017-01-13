@@ -16,6 +16,89 @@ granularity of 10s of milliseconds and perform the following steps:
 6. Repeat
 ```
 
+### Optimizations
+#### Memory Management
+MCs are typically only a few MB when idle. However, they can easily be very large during heavy workloads. In the \*extreme\* worst-case, QEMU will need double the amount of main memory than that of what was originally allocated to the virtual machine.
+
+To support this variability during transient periods, a MC consists of a linked list of slabs, each of identical size. Because MCs occur several times per second (a frequency of 10s of milliseconds), slabs allow MCs to grow and shrink without constantly re-allocating all memory in place during each checkpoint. During steady-state, the 'head' slab is permanently allocated and never goes away, so when the VM is idle, there is no memory allocation at all.
+
+Regardless, the current strategy taken will be:
+```
+1. If the checkpoint size increases, then grow the number of slabs to support it.
+2. If the next checkpoint size is smaller than the last one, then that's a "strike".
+3. After N strikes, cut the size of the slab cache in half (to a minimum of 1 slab as described before).
+```
+
+MC serializes the actual RAM page contents in such a way that the actual pages are separated from the meta-data (all the QEMUFile stuff).
+
+This is done strictly for the purposes of being able to use RDMA and to replace memcpy() on the local machine for hardware with very fast RAM memory speeds.
+
+This serialization requires recording the page descriptions and then pushing them into slabs after the checkpoint has been captured (minus the page data).
+
+Enable the following in checkpoint.c to enter debug mode
+```
+//#define DEBUG_MC_VERBOSE
+//#define DEBUG_MC_REALLY_VERBOSE
+```
+Primary:
+```
+mc: iov # 0, len: 32768
+mc: Copying to 0x7f2882e94020 from 0x7f299c4a6630, size 32768
+mc: put: 32768 len: 0 total 32768 size: 32768 slab 0
+mc: iov # 0, len: 32768
+mc: Copying to 0x7f2882e9c020 from 0x7f299c4a6630, size 32768
+mc: put: 32768 len: 0 total 65536 size: 65536 slab 0
+mc: iov # 0, len: 32768
+mc: Copying to 0x7f2882ea4020 from 0x7f299c4a6630, size 32768
+mc: put: 32768 len: 0 total 98304 size: 98304 slab 0
+mc: iov # 0, len: 32768
+mc: Copying to 0x7f2882eac020 from 0x7f299c4a6630, size 32768
+mc: put: 32768 len: 0 total 131072 size: 131072 slab 0
+mc: iov # 0, len: 32768
+mc: Copying to 0x7f2882eb4020 from 0x7f299c4a6630, size 32768
+mc: put: 32768 len: 0 total 163840 size: 163840 slab 0
+mc: iov # 0, len: 32768
+mc: Copying to 0x7f2882ebc020 from 0x7f299c4a6630, size 32768
+mc: put: 32768 len: 0 total 196608 size: 196608 slab 0
+mc: iov # 0, len: 32768
+mc: Copying to 0x7f2882ec4020 from 0x7f299c4a6630, size 32768
+mc: put: 32768 len: 0 total 229376 size: 229376 slab 0
+mc: iov # 0, len: 6592
+mc: Copying to 0x7f2882ecc020 from 0x7f299c4a6630, size 6592
+mc: put: 6592 len: 0 total 235968 size: 235968 slab 0
+mc: Copyset identifiers complete. Copying memory from 1 copysets...
+mc: Adding to existing slab: 2 slabs total, 10 MB
+mc: Found copyset slab @ idx 1
+mc: copyset 0 copies: 329 total: 329
+mc: Copying to 0x7f2882993010 from 0x7f288d12d000, size 4096
+mc: put: 4096 len: 0 total 240064 size: 4096 slab 1
+mc: Success copyset 0 index 0
+mc: Copying to 0x7f2882994010 from 0x7f288d14a000, size 4096
+mc: put: 4096 len: 0 total 244160 size: 8192 slab 1
+mc: Success copyset 0 index 1
+mc: Copying to 0x7f2882995010 from 0x7f288d16f000, size 4096
+mc: put: 4096 len: 0 total 248256 size: 12288 slab 1
+mc: Success copyset 0 index 2
+...
+mc: Success copyset 0 index 327
+mc: Copying to 0x7f2882adb010 from 0x7f298bffc000, size 4096
+mc: put: 4096 len: 0 total 1583552 size: 1347584 slab 1
+mc: Success copyset 0 index 328
+mc: Copy complete: 329 pages
+mc: transaction: sent: START (301)
+mc: Sending checkpoint size 1583552 copyset start: 1 nb slab 2 used slabs 2
+mc: Transaction commit
+mc: Attempting write to slab #0: 0x7f2882e94020 total size: 235968 / 5242880
+mc: transaction: sent: COMMIT (302)
+mc: Sent idx 0 slab size 235968 all 1583552
+mc: Attempting write to slab #1: 0x7f2882993010 total size: 1347584 / 5242880
+mc: Sent idx 1 slab size 1347584 all 1583552
+mc: Waiting for commit ACK
+mc: transaction: recv: ACK (304)
+mc: Memory transfer complete.
+mc: bytes 1583552 xmit_mbps 83.3 xmit_time 152 downtime 7 sync_time 0 logdirty_time 0 ram_copy_time 3 copy_mbps 4222.8 wait time 993 checkpoints 5
+```
+
 ### Usage
 #### BEFORE Running
 Network setup
