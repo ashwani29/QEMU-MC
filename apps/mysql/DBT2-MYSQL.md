@@ -40,9 +40,9 @@ Note: it wont' return any compiling errors if these packages are missing.
 Data for the test is generate by datagen
 One has to specify:
 ```
--w - number of warehouses (example: -w 3)
--d - output path for data files (example: -d /tmp/dbt2-w3)
-- mode (example: --mysql)
+       -w - number of warehouses (example: -w 3)
+       -d - output path for data files (example: -d /tmp/dbt2-w3)
+       - mode (example: --mysql)
 ```
 Example:
 ```
@@ -60,7 +60,6 @@ options:
        -d <database name>
        -f <path to dataset files>
        -s <database socket>
-       -h <database host>
        -v <verbose>
 ```
 Example:
@@ -81,6 +80,9 @@ other options:
        -d <database name. (default dbt2)>
        -h <database host name. (default localhost)>
        -l <database port number>
+
+       -h doesn't specify the database hostname, but prints the help! Use -H instead
+       -d is not the database name, but the duration of the test in seconds
 ```
 Series of gotcha:
 
@@ -105,11 +107,7 @@ database.
 Results can be found in scripts/output/\<number\>
 
 some of the usefull log files:
-```
-scripts/output/<number>/client/error.log - errors from backend C|SP based
-scripts/output/<number>/driver/error.log - errors from terminals(driver)
-scripts/output/<number>/driver/mix.log - info about performed transactions
-scripts/output/<number>/driver/results.out - results of the test
-```
-
-
+- scripts/output/<number>/client/error.log - errors from backend C|SP based
+- scripts/output/<number>/driver/error.log - errors from terminals(driver)
+- scripts/output/<number>/driver/mix.log - info about performed transactions
+- scripts/output/<number>/driver/results.out - results of the test
