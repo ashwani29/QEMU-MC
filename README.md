@@ -11,21 +11,8 @@ Micro-Checkpoints (MC) work against the existing live migration path in QEMU, an
 3. Generate a MC by invoking the live migration software path to identify and copy dirty memory into a local staging area inside QEMU. (downtime)
 4. Resume the VM immediately so that it can make forward progress.
 5. Transmit the checkpoint to the destination.
-6. If down_time 
-
-6. Repeat
-wait_time = (s->downtime <= freq_ms) ? (freq_ms - s->downtime) : 0;
-
-if (wait_time) {
-	g_usleep(wait_time * 1000);
-}
-
-capture checkpoint
-1. start = qemu_clock_get_ms(QEMU_CLOCK_REALTIME);
-2. Copyset identifiers complete. Copying memory from copysets...
-3. MC is safe in staging area. Let the VM go. s->downtime = stop - start;
+6. If downtime > freq_ms, then wait_time = 0, dive right back into the next checkpoint as soon as the previous transmission completed. Otherwise, sleep for (freq_ms - downtime) and repeat.
 ```
-Sometimes, when checkpoints are very large, all of the wait time was dominated by the time taken to copy the checkpoint into the staging area, in which case wait_time, will probably be zero and we will end up diving right back into the next checkpoint as soon as the previous transmission completed.
 
 ### Optimizations
 #### Memory Management
