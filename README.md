@@ -5,15 +5,13 @@ This is an implementation of Micro Checkpointing for memory and cpu state.
 
 ### The Micro-Checkpointing Process
 #### Basic Algorithm 
-Micro-Checkpoints (MC) work against the existing live migration path in QEMU, and can effectively 
-be understood as a "live migration that never ends". As such, iteration rounds happen at the 
-granularity of 10s of milliseconds and perform the following steps:
+Micro-Checkpoints (MC) work against the existing live migration path in QEMU, and can effectively be understood as a "live migration that never ends". As such, iteration rounds happen at the granularity of 10s of milliseconds and perform the following steps:
 ```
 1. After N milliseconds, stop the VM.
-3. Generate a MC by invoking the live migration software path to identify and copy dirty memory into a local staging area inside QEMU.
+3. Generate a MC by invoking the live migration software path to identify and copy dirty memory into a local staging area inside QEMU. (downtime)
 4. Resume the VM immediately so that it can make forward progress.
 5. Transmit the checkpoint to the destination.
-6. Repeat
+6. If downtime > freq_ms, then wait_time = 0, dive right back into the next checkpoint as soon as the previous transmission completed. Otherwise, sleep for (freq_ms - downtime) and repeat.
 ```
 
 ### Optimizations
