@@ -8,7 +8,7 @@ cd $QEMU_MC/apps/mysql
 sleep 1;
 
 # Run sysbench, with 2 threads.
-# -n limit for total number of requests
+# -n limit for total number of requests, default 100
 ./run-sysbench -p 7000 -t 4 -i 127.0.0.1
 sleep 1;
 killall -9 mysqld
