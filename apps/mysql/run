@@ -7,8 +7,38 @@ cd $QEMU_MC/apps/mysql
 ./mysql-install/libexec/mysqld --defaults-file=./my.cnf &
 sleep 1;
 
-# Run sysbench, with 2 threads.
-# -n limit for total number of requests, default 100
+# General options:
+#  -t                              number of threads to use
+#  -n                              limit for total number of requests, default 100
+
+# oltp options:
+#  --oltp-read-only=[on|off]       generate only 'read' queries (do not modify database) [off]
+#  --oltp-table-name=STRING        name of test table
+#  --oltp-table-size=N             number of records in test table
+
+# SELECT tests
+#  --oltp-range-size=N             range size for range queries
+#  --oltp-sum-ranges=N             number of sum ranges
+#  --oltp-simple-ranges=N          number of simple ranges
+#  --oltp-order-ranges=N           number of ordered ranges
+
+# UPDATE tests
+#  --oltp-index-updates=N          number of index update
+#  The amount of queries ran by this test is set by the option oltp_index_updates.
+#  Each time an integer N less or equal than the number of records (oltp-table-size) is sampled with the specified distribution and executes the following query
+#    UPDATE sbtest SET k=k+1 WHERE id=N
+
+#  --oltp-non-index-updates=N      number of non-index updates
+#  The amount of queries ran by this test is set by the option oltp_index_updates (1 by default).
+#  Each time an integer N less or equal than the number of records (oltp-table-size) is sampled with the specified distribution and executes the following query
+#    UPDATE sbtest SET c=C WHERE id=N
+
+#  --oltp-dist-type=STRING         random numbers distribution {uniform,gaussian,special} [special]
+#  --oltp-dist-pct=N               percentage of values to be treated as 'special' (for special distribution) [1]
+#  --oltp-dist-res=N               percentage of 'special' values to use (for special distribution) [75]
+#  The default distribution is called the special distribution and picks a row from the first 1% of a table for 75% of the time.
+#  In other words, if you ask for 100 row IDs, then you will get about 75 IDs between 1 and --oltp-table-size*1% and 25 IDs above --oltp-table-size*1%.
+
 ./run-sysbench -p 7000 -t 4 -i 127.0.0.1
 sleep 1;
 killall -9 mysqld
