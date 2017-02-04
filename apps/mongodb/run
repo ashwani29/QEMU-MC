@@ -25,13 +25,33 @@ APP_DIR=$QEMU_MC/apps/mongodb
 # change diretory and start server
 cd $APP_DIR/install
 bin/mongod --fork --port=27717 --dbpath=$APP_DIR/install/data --pidfilepath=$APP_DIR/install/mongod.pid --quiet --logpath=$APP_DIR/install/mongodb.log
+# --fork        fork server process (enable a daemon mode for mongod that runs the process in the background)
+# --dbpath arg  defaults to /data/db
+
+# If you want mongod to store data files at a path other than /data/db you can specify a dbpath.
+# The dbpath must exist before you start mongod.
+# If it does not exist, create the directory and the permissions so that mongod can read and write data to this path.
+
 sleep 2
 
 # test
 cd ../ycsb-0.1.4
-./bin/ycsb load mongodb -s -p mongodb.url=127.0.0.1:27717 -p mongodb.writeConcern=normal -p mongodb.database=local -P workloads/workloadb -threads 50
+./bin/ycsb load mongodb -s -p mongodb.url=127.0.0.1:27717 -p mongodb.writeConcern=normal -p mongodb.database=records -P workloads/workloadb -threads 50
+# -threads n    Number of client threads (default: 1)
+# -s            Print status to stderr
+# -P file       Specify workload file
+# -p key=value  Override workload property
+
+# Write concern describes the guarantee that MongoDB provides when reporting on the success of a write operation.
+# The strength of the write concerns determine the level of guarantee.
+# When inserts, updates and deletes have a weak write concern, write operations return quickly.
+# In some failure cases, write operations issued with weak write concerns may not persist.
+# With stronger write concerns, clients wait after sending a write operation for MongoDB to confirm the write operations.
+
+# Load data into the records database
+
 sleep 1
-./bin/ycsb run mongodb -s -p mongodb.url=127.0.0.1:27717 -p mongodb.writeConcern=normal -p mongodb.database=local -P workloads/workloadb -threads 50
+./bin/ycsb run mongodb -s -p mongodb.url=127.0.0.1:27717 -p mongodb.writeConcern=normal -p mongodb.database=records -P workloads/workloadb -threads 50
 # Workload B: Read mostly workload
 #   Application example: photo tagging; add a tag is an update, but most operations are to read tags
 #
