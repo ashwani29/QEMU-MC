@@ -205,4 +205,11 @@ MC can be initiated with exactly the same command as standard live migration:
 QEMU Monitor Command:
 ```
 migrate tcp:147.8.179.243:6666
+
+help migrate
+migrate [-d] [-b] [-i] uri -- migration to URI (using -d to not wait for completion)
+                         -b for migration without shared storage with full copy of disk
+
+info migrate ##show migration status
+info status ##show the current VM status (running|paused)
 ```
