@@ -13,6 +13,25 @@ Micro-Checkpoints (MC) work against the existing live migration path in QEMU, an
 5. Transmit the checkpoint to the destination.
 6. If downtime > freq_ms, then wait_time = 0, dive right back into the next checkpoint as soon as the previous transmission completed. Otherwise, sleep for (freq_ms - downtime) and repeat.
 ```
+#### I/O buffering
+For the network in particular, buffering is performed using a series of netlink (libnl3) Qdisc "plugs", introduced by the Xen Remus implementation. All packets go through netlink in the host kernel - there are no exceptions and no gaps. Even while one buffer is being released (say, after a checkpoint has been saved), another plug will have already been initiated to hold the next round of packets simultaneously while the current round of packets are being released. Thus, at any given time, there may be as many as two simultaneous buffers in place.
+
+```
+1. Insert a new Qdisc plug (Buffer A).
+```
+Repeat Forever:
+```
+2. After N milliseconds, stop the VM.
+3. Generate a MC by invoking the live migration software path to identify and copy dirty memory into a local staging area inside QEMU.
+4. Insert a *new* Qdisc plug (Buffer B). This buffers all new packets only.
+5. Resume the VM immediately so that it can make forward progress (making use of Buffer B).
+6. Transmit the MC to the destination.
+7. Wait for acknowledgement.
+8. Acknowledged.
+9. Release the Qdisc plug for Buffer A.
+10. Qdisc Buffer B now becomes (symbolically rename) the most recent Buffer A
+11. Go back to Step 2
+```
 
 ### Optimizations
 #### Memory Management
