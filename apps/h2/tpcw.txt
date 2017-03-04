@@ -44,12 +44,18 @@ The process of setting up TPC-W takes the following steps:
    b. In all servlets, did replacing of ";$sessionid$" to ";jsessionid="
    c. Build the servlets, using servlets/Makefile
    d. compiled and copied servlets + classes into "WEB-INF\classes".
+   e. Put the web configuration file "web.xml" and save it in "WEB-INF".
 
 7. Build the RBE
    a. in rbe.java, changed ";$sessionid$" to ";jsessionid="
    b. javac rbe/* from the root tpcw directory. Make sure the . is in your
       CLASSPATH.
 
+8. Test
+   a. Issue the following URL (assuming that Tomcat is running in port 8080):
+      http://localhost:8080/tpcw/
+
 8. Run the RBE, see the runtpcw file for examples
 
 java -mx512M rbe.RBE -EB rbe.EBTPCW2Factory 30 -OUT run1.m -RU 100 -MI 1000 -RD 100 -WWW http://localhost:8080/ -CUST 144000 -ITEM 10000 -TT 0.0
+
