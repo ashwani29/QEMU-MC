@@ -1,0 +1,74 @@
+=============================
+Running With JRE 6 Or Later
+=============================
+
+(1) Download and Install a Java SE Runtime Environment (JRE)
+
+(1.1) Download a Java SE Runtime Environment (JRE),
+      release version 6 or later, from
+      http://www.oracle.com/technetwork/java/javase/downloads/index.html
+
+(1.2) Install the JRE according to the instructions included with the
+      release.
+
+      You may also use a full Java Development Kit (JDK) rather than just
+      a JRE.
+
+(2) Configure Environment Variables
+
+(2.1) Set CATALINA_HOME (required)
+
+The CATALINA_HOME environment variable should be set to the location of the
+root directory of the "binary" distribution of Tomcat.
+
+The Tomcat startup scripts have some logic to set this variable
+automatically if it is absent, based on the location of the startup script
+in *nix.
+
+
+(3) Start Up Tomcat
+
+(3.1) Tomcat can be started by executing one of the following commands:
+
+  On *nix:
+
+      $CATALINA_HOME/bin/startup.sh
+
+(3.2) After startup, the default web applications included with Tomcat will be
+      available by visiting:
+
+      http://localhost:8080/
+
+
+(4) Shut Down Tomcat
+
+(4.1) Tomcat can be shut down by executing one of the following commands:
+
+  On *nix:
+
+      $CATALINA_HOME/bin/shutdown.sh
+
+==================================================
+Advanced Configuration - Multiple Tomcat Instances
+==================================================
+
+When running with a separate CATALINA_HOME and CATALINA_BASE, the files
+and directories are split as following:
+
+In CATALINA_BASE:
+
+ * lib  - Libraries and classes, as explained below
+
+ * logs - Log and output files
+
+ * webapps - Automatically loaded web applications
+
+
+In CATALINA_HOME:
+
+ * bin  - Startup and shutdown scripts
+
+ * lib  - Libraries and classes, as explained below
+
+In general it is advised to never share libraries between web applications,
+but put them into WEB-INF/lib directories inside the applications.
