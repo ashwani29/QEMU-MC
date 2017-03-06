@@ -255,5 +255,4 @@ QEMU-SPECIFIC COMMANDS
            Send an arbitrary monitor command command to domain domain through the qemu monitor. The results of the command will
            be printed on stdout. If --hmp is passed, the command is considered to be a human monitor command and libvirt will
            automatically convert it into QMP if needed. In that case the result will also be converted back from QMP.
-
 ```
