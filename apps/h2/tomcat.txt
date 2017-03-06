@@ -51,6 +51,8 @@ and directories are split as following:
 
 In CATALINA_BASE:
 
+ * conf - Server configuration files (including server.xml)
+
  * lib  - Libraries and classes, as explained below
 
  * logs - Log and output files
@@ -66,3 +68,26 @@ In CATALINA_HOME:
 
 In general it is advised to never share libraries between web applications,
 but put them into WEB-INF/lib directories inside the applications.
+
+
+================
+Troubleshooting
+================
+
+There are only really 1 thing likely to go wrong during the stand-alone
+Tomcat install:
+
+(1) The most common hiccup is when another web server (or any process for that
+    matter) has laid claim to port 8080.  This is the default HTTP port that
+    Tomcat attempts to bind to at startup.  To change this, open the file:
+
+       $CATALINA_HOME/conf/server.xml
+
+    and search for '8080'.  Change it to a port that isn't in use, and is
+    greater than 1024, as ports less than or equal to 1024 require superuser
+    access to bind under UNIX.
+
+    Restart Tomcat and you're in business.  Be sure that you replace the "8080"
+    in the URL you're using to access Tomcat.  For example, if you change the
+    port to 1977, you would request the URL http://localhost:1977/ in your
+    browser.
