@@ -2,17 +2,11 @@
 Running With JRE 6 Or Later
 =============================
 
-(1) Download and Install a Java SE Runtime Environment (JRE)
+(1) Download and Install Java
 
-(1.1) Download a Java SE Runtime Environment (JRE),
-      release version 6 or later, from
-      http://www.oracle.com/technetwork/java/javase/downloads/index.html
+  On *nix:
 
-(1.2) Install the JRE according to the instructions included with the
-      release.
-
-      You may also use a full Java Development Kit (JDK) rather than just
-      a JRE.
+      $apt-get install default-jdk
 
 (2) Configure Environment Variables
 
