@@ -1,0 +1,67 @@
+#!/bin/bash
+
+#
+# Copyright (c) 2014,  Regents of the Columbia University 
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other 
+# materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+# THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+# IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+
+#if [ -z $1 ]; then
+#        # No version number
+#        echo "Usage: <version number: e.g. 1.1.5>"
+#        exit 1
+#fi
+
+VER=1.15.0
+cd $QEMU_MC/apps/leveldb
+rm -rf leveldb-$VER
+if [ ! -f leveldb-$VER.tar.gz ]; then
+    wget https://leveldb.googlecode.com/files/leveldb-$VER.tar.gz
+fi
+tar zxvf leveldb-$VER.tar.gz
+
+pushd leveldb-$VER
+
+make all -j64
+make db_bench -j64
+make db_bench_sqlite3
+make db_bench_tree_db
+
+mv db_bench ../db_bench
+mv db_bench_sqlite3 ../db_bench_sqlite3
+mv db_bench_tree_db ../db_bench_tree_db
+
+popd
+
+# The Bourne Again Shell allows you to store a list of directories you are working with,
+# enabling you to move easily among with. This list is referred to as a stack. It is
+# analogous to a stack of dinner plates: You typically add plates to and remove plates from
+# the top of the stack, creating a last-in first-out, (LIFO) stack.
+# dirs: Displays the stack
+# The dirs builtin displays the content of the directory stack. If you call dirs when the
+# directory is empty, it displays the name of the working displays:
+# $ dirs
+# ~/literature
+# The dirs builtin uses a tilde (~) to represent the name of the home directory.
+# pushd: Pushes a directory on the stack
+# To change directories and at the same tilde add a new directory to the top of the stack,
+# use the pushd (push directory) builtin. In addition to changing directories, the pushd
+# builtin displays the contents of the stack.
+# popd: Pops a directory off the stack
+# To remove a directory from the stack, use the popd (pop directory) builtin. popd used
+# without an argument removes the top directory from the stack and changes the working
+# directory to the new top directory.
