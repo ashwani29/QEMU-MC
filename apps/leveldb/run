@@ -42,13 +42,13 @@ BLOCK
 
 
 APP=$QEMU_MC/apps/leveldb/db_bench
-SENTENCEA=static\ int\ FLAGS_threads\ =\ 1;
+SENTENCEA=static\ int\ FLAGS_threads\ =\ 1\;
 APPB=$QEMU_MC/apps/leveldb/db_bench_4
-SENTENCEB=static\ int\ FLAGS_threads\ =\ 4;
+SENTENCEB=static\ int\ FLAGS_threads\ =\ 4\;
 APPC=$QEMU_MC/apps/leveldb/db_bench_8
-SENTENCEC=static\ int\ FLAGS_threads\ =\ 8;
+SENTENCEC=static\ int\ FLAGS_threads\ =\ 8\;
 APPD=$QEMU_MC/apps/leveldb/db_bench_16
-SENTENCED=static\ int\ FLAGS_threads\ =\ 16;
+SENTENCED=static\ int\ FLAGS_threads\ =\ 16\;
 
 SOURCE_FILE=$QEMU_MC/apps/leveldb/leveldb-$VER/db/db_bench.cc
 echo $SOURCE_FILE
