@@ -27,7 +27,6 @@
 #fi
 VER=1.15.0
 cd $QEMU_MC/apps/leveldb
-rm -rf out* serializer.log
 
 
 #multi-line comments
