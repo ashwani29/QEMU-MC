@@ -232,3 +232,28 @@ migrate [-d] [-b] [-i] uri -- migration to URI (using -d to not wait for complet
 info migrate ##show migration status
 info status ##show the current VM status (running|paused)
 ```
+virsh
+```
+GENERIC COMMANDS
+
+       list
+           Prints information about existing domains. If no options are specified it prints out information about running domains.
+
+           An example format for the list is as follows:
+
+           virsh list
+             Id    Name                           State
+            ----------------------------------------------------
+             0     Domain-0                       running
+             2     fedora                         paused
+
+           Name is the name of the domain.
+
+QEMU-SPECIFIC COMMANDS
+
+       qemu-monitor-command domain { [--hmp] } command...
+           Send an arbitrary monitor command command to domain domain through the qemu monitor. The results of the command will
+           be printed on stdout. If --hmp is passed, the command is considered to be a human monitor command and libvirt will
+           automatically convert it into QMP if needed. In that case the result will also be converted back from QMP.
+
+```
