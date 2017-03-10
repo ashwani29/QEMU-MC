@@ -40,6 +40,7 @@ make all -j64
 make db_bench -j64
 make db_bench_sqlite3
 make db_bench_tree_db
+# Kyoto Tycoon is a package of network interface to Kyoto Cabinet.
 
 mv db_bench ../db_bench
 mv db_bench_sqlite3 ../db_bench_sqlite3
