@@ -21,34 +21,34 @@ else
 fi
 
 
-# Heming cleanup work.
+# cleanup work.
 PORT=7000
 IP=127.0.0.1
 
-cd $MSMR_ROOT/apps/mongodb/sysbench-mongodb
+cd $QEMU_MC/apps/mongodb/sysbench-mongodb
 #rm -rf db-dir
 mkdir -p db-dir
 killall -9 mongo mongod
 
 echo "Starting mongodb server..."
-$MSMR_ROOT/apps/mongodb/install/bin/mongod --port $PORT --dbpath=$PWD/db-dir --quiet &> mongodb.log &
+$QEMU_MC/apps/mongodb/install/bin/mongod --port $PORT --dbpath=$PWD/db-dir --quiet &> mongodb.log &
 sleep 15;
 
 echo "Preparing for database sbtest..."
-$MSMR_ROOT/apps/mongodb/install/bin/mongo --port $PORT --host $IP < cleanup.js
+$QEMU_MC/apps/mongodb/install/bin/mongo --port $PORT --host $IP < cleanup.js
 sleep 1;
 killall -9 mongo mongod
 #exit 0;
 
 echo "Restarting mongodb server..."
 L2D_PRELOAD=$XTERN_ROOT/dync_hook/interpose.so \
-$MSMR_ROOT/apps/mongodb/install/bin/mongod --port $PORT --dbpath=$PWD/db-dir --quiet &> mongodb.log &
+$QEMU_MC/apps/mongodb/install/bin/mongod --port $PORT --dbpath=$PWD/db-dir --quiet &> mongodb.log &
 sleep 15;
 
 
 
 echo "Running sysbench-mongodb benchmark..."
-export CLASSPATH=$MSMR_ROOT/apps/mongodb/mongo-java-driver-2.13.0.jar:$CLASSPATH
+export CLASSPATH=$QEMU_MC/apps/mongodb/mongo-java-driver-2.13.0.jar:$CLASSPATH
 javac -cp $CLASSPATH:$PWD/src src/jmongosysbenchload.java
 javac -cp $CLASSPATH:$PWD/src src/jmongosysbenchexecute.java
 
