@@ -51,6 +51,6 @@ The process of setting up TPC-W takes the following steps:
    a. Issue the following URL (assuming that Tomcat is running in port 8080):
       http://localhost:8080/tpcw/
 
-8. Run the RBE, see the runtpcw file for examples
+9. Run the RBE, see the runtpcw file for examples
    a. java -mx512M rbe.RBE -EB rbe.EBTPCW1Factory 30 -OUT run1.m -RU 100 -MI
       1000 -RD 100 -WWW http://localhost:8080/ -CUST 144000 -ITEM 10000 -TT 1.0
