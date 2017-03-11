@@ -232,36 +232,3 @@ migrate [-d] [-b] [-i] uri -- migration to URI (using -d to not wait for complet
 info migrate ##show migration status
 info status ##show the current VM status (running|paused)
 ```
-### Performance
-#### Libvirt Support
-Once your Guest is created, you can see it by typing the following :
-```
-virsh 'list --all'
-```
-You'll see :
-```
- Id Name                 State
-----------------------------------
- - YourGuestName         shut off
-```
-To start your virtual server, you can type :
-```
-virsh start YourGuestName
-```
-The first guest is accessible, by default, on vnc:127.0.0.1:5900.
-
-Ubuntu-vm-builder doesn't allow you to create the VM on a raw block device yet. You can use ubuntu-vm-builder to create the qcow2 image and then move the VM to the block device with qemu-img though; if /dev/sdb is the disk device on which you want to move the virtual machine:
-```
-sudo qemu-img convert root.qcow2 -O raw /dev/sdb
-```
-Edit the XML definition file for the VM in /etc/libvirt/qemu/, and set the source file to be:
-```
-<source file='/dev/sdb'/>
-```
-**Redefine** the VM and start it; it is now running from /dev/sdb.
-
-To send an arbitrary monitor command to domain through the qemu monitor, you can type:
-```
-qemu-monitor-command domain { [--hmp] } command...
-```
-The results of the command will be printed on stdout. If --hmp is passed, the command is considered to be a human monitor command and libvirt will automatically convert it into QMP if needed. In that case the result will also be converted back from QMP.
