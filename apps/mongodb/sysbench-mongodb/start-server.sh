@@ -14,13 +14,13 @@ fi
 # Heming cleanup work.
 PORT=7000
 
-cd $MSMR_ROOT/apps/mongodb/sysbench-mongodb
+cd $QEMU_MC/apps/mongodb/sysbench-mongodb
 #rm -rf db-dir
 mkdir -p db-dir
 killall -9 mongo mongod
 
 echo "Starting mongodb server, please wait for about 15 seconds..."
-#L2D_PRELOAD=$XTERN_ROOT/dync_hook/interpose.so \
-$MSMR_ROOT/apps/mongodb/install/bin/mongod --port $PORT --dbpath=$PWD/db-dir --quiet &> mongodb.log &
+
+$QEMU_MC/apps/mongodb/install/bin/mongod --port $PORT --dbpath=$PWD/db-dir --quiet &> mongodb.log &
 sleep 15;
 
