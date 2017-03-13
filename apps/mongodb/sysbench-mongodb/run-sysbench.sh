@@ -26,10 +26,10 @@ MONGO_SERVER=$1
 MONGO_PORT=$2
 
 
-cd $QEMU_MC/apps/mongodb/sysbench-mongodb
+cd $MSMR_ROOT/apps/mongodb/sysbench-mongodb
 
 echo "Running sysbench-mongodb benchmark..."
-export CLASSPATH=$QEMU_MC/apps/mongodb/mongo-java-driver-2.13.0.jar:$CLASSPATH
+export CLASSPATH=$MSMR_ROOT/apps/mongodb/mongo-java-driver-2.13.0.jar:$CLASSPATH
 javac -cp $CLASSPATH:$PWD/src src/jmongosysbenchload.java
 javac -cp $CLASSPATH:$PWD/src src/jmongosysbenchexecute.java
 
