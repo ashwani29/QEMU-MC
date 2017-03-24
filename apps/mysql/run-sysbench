@@ -33,7 +33,29 @@ if __name__ == "__main__":
     cmd += " --oltp-table-size=2000000"
     cmd += " --oltp-table-name=sbtest"
     cmd += " --mysql-db=sysbench_db"
+
     cmd += " --oltp-test-mode=complex"
+    # The following execution modes are available at the run stage:
+    #
+    # Simple
+    #     In this mode each thread runs simple queries of the following
+    #     form:
+    #
+    #         SELECT c FROM sbtest WHERE id=N
+    #
+    # Advanced transactional
+    #     Each thread performs transactions on the test table. If the
+    #     test table and database support transactions (e.g. InnoDB
+    #     engine in MySQL), then BEGIN/COMMIT statements will be used to
+    #     start/stop a transaction.
+    #
+    #     Depending on the command line options, each transaction may
+    #     contain the following statements:
+    #     ·   UPDATEs on index column
+    #     ·   UPDATEs on non-index column
+    #     ·   DELETE queries
+    #     ·   ...
+
     cmd += " --mysql-engine-trx=yes"
     cmd += " --mysql-table-engine=InnoDB"
     cmd += " --oltp-index-updates=200"
