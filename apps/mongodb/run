@@ -49,6 +49,9 @@ cd ../ycsb-0.1.4
 # With stronger write concerns, clients wait after sending a write operation for MongoDB to confirm the write operations.
 
 # Load data into the records database
+# The standard workload parameter files create very small databases; for example, workloada creates only 1,000 records.
+# To run an actual benchmark you'll want to generate a much larger database. For example, imagine you want to load 100
+# million records. Then, you will need to override the default "recordcount" property in the workloada file.
 
 sleep 1
 ./bin/ycsb run mongodb -s -p mongodb.url=127.0.0.1:27717 -p mongodb.writeConcern=normal -p mongodb.database=records -P workloads/workloadb -threads 50
