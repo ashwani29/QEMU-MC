@@ -72,6 +72,24 @@ Series of gotcha:
 Documentation says to use scripts/mysql/mysql_load_db.sh: this script doesn't exist!
 Instead, use script/mysql/build_db.sh
 
+### Load SP procedures (optional)
+Only if you ran configure with `--enable-mysql-sp`
+
+```
+cd scripts/mysql
+./mysql_load_sp.sh
+
+usage: mysql_load_sp.sh [options]
+options:
+    -d <database name>
+    -c <path to mysql client binary. (default: /usr/bin/mysql)>
+    -f <path to SPs>
+```
+Example:
+```
+sh mysql_load_sp.sh -d dbt2 -f ../../storedproc/mysql/
+```
+
 ### Run the test
 Run test using run_workload.sh
 ```

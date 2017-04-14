@@ -10,6 +10,6 @@ http://www.mirrorservice.org/sites/downloads.sourceforge.net/o/os/osdldbt/dbt2/0
 tar xzvf dbt2-$DBT2_VER.tar.gz
 cd dbt2-$DBT2_VER/
 LIBS+="-L$QEMU_MC/apps/mysql/mysql-install/lib/mysql/ -Wl,--rpath,$QEMU_MC/apps/mysql/mysql-install/lib/mysql/ -lmysqlclient" \
-./configure --with-mysql=$PWD/../mysql-install --enable-nosp
+./configure --with-mysql=$PWD/../mysql-install --enable-mysql-sp #--enable-nosp
 make
 
