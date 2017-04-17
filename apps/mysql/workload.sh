@@ -23,6 +23,7 @@ while [ $i -le $cnt ]
 do
 	/usr/bin/time -f "%e real" ./mysql-install/bin/mysql -u root -h $1 -P $2 -e \
 		'use sysbench_db; select count(*) from sbtest where c REGEXP "$STR";' &
+                # count(*) gets a count of the total number of rows in the table
 	sleep 0.001
 	(( i++ ))
 done
