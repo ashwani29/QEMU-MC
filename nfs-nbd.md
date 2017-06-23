@@ -54,14 +54,14 @@ filename
 ```
 #### EXAMPLES
 ```
-mkdir /exports
-dd if=/dev/zero of=/exports/nbd-export bs=1024 count=100000
+hermes:~# mkdir /exports
+hermes:~# dd if=/dev/zero of=/exports/nbd-export bs=1024 count=100000
 
-mke2fs nbd-export
+hermes:~# mke2fs nbd-export
 /exports/nbd-export is not a special block device.
 Proceed anyway? (y,n) y
 
-nbd-server 5000 /exports/nbd-export
+hermes:~# nbd-server 5000 /exports/nbd-export
 ```
 
 ### NBD Client
@@ -83,12 +83,16 @@ nbd-device
 #### EXAMPLES
 To connect to a server running on port 5000 at host "server.domain.com", using the client's block special file "/dev/nbd0":
 ```
-nbd-client server.domain.com 5000 /dev/nbd0
+hermes:~# nbd-client server.domain.com 5000 /dev/nbd0
 ```
 Then
 ```
-mount /dev/nbd0 /mnt
-
-ls /mnt
+hermes:~# mount /dev/nbd0 /mnt
+hermes:~# ls /mnt
 lost+found
+hermes:~# df
+Filesystem     1K-blocks     Used Available Use% Mounted on
+[...]
+/dev/nbd0          96828       13     91815   1% /mnt
+hermes:~# dd if=/dev/zero of=/mnt/text count=8192 bs=1024
 ```
