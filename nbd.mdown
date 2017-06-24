@@ -1,33 +1,4 @@
-## NFS
-### Installation
-At a terminal prompt enter the following command to install the NFS Server:
-```
-sudo apt install nfs-kernel-server
-```
-### Configuration
-You can configure the directories to be exported by adding them to the `/etc/exports` file. For example:
-```
-/ubuntu  *(ro,sync,no_root_squash)
-/home    *(rw,sync,no_root_squash)
-```
-To start the NFS server, you can run the following command at a terminal prompt:
-```
-service nfs-kernel-server restart
-```
-
-### NFS Client Configuration
-Use the *mount* command to mount a shared NFS directory from another machine, by typing a command line similar to the following at a terminal prompt:
-```
-sudo mount example.hostname.com:/ubuntu /local/ubuntu
-```
-The mount point directory `/local/ubuntu` must exist. There should be no files or subdirectories in the `/local/ubuntu` directory.
-
-If you have trouble mounting an NFS share, make sure the *nfs-common* package is installed on your client. To install *nfs-common* enter the following command at the terminal prompt:
-```
-sudo apt install nfs-common
-```
-
-## NBD
+# NBD
 The Network Block Device is a Linux-originated lightweight block access
 protocol that allows one to export a block device to a client. While the
 name of the protocol specifically references the concept of block
@@ -42,8 +13,8 @@ need not be an actual block device; it may be a block device, a regular
 file, or a more complex configuration involving several files. That is
 an implementation detail of the server.
 
-### Setup
-#### NBD Server
+## NBD Setup
+### NBD Server
 **Synopsis**
 ```
 hermes:~# nbd-server port filename [ -r ] [ -c ] [ -C config file ]
@@ -72,7 +43,7 @@ Proceed anyway? (y,n) y
 hermes:~# nbd-server 5000 /exports/nbd-export
 ```
 
-#### NBD Client
+### NBD Client
 **Synopsis**
 ```
 nbd-client host [ port ] nbd-device
@@ -95,9 +66,9 @@ Filesystem     1K-blocks     Used Available Use% Mounted on
 hermes:~# dd if=/dev/zero of=/mnt/text count=8192 bs=1024
 ```
 
-### NBD Protocol
+## NBD Protocol
 
-#### Protocol phases
+### Protocol phases
 
 The NBD protocol has two phases: the handshake and the transmission. During the
 handshake, a connection is established and an exported NBD device along other
@@ -105,13 +76,13 @@ protocol parameters are negotiated between the client and the server. After a
 successful handshake, the client and the server proceed to the transmission
 phase in which the export is read from and written to.
 
-##### Handshake
+#### Handshake
 
 The handshake is the first phase of the protocol. Its main purpose is to
 provide means for both the client and the server to negotiate which
 export they are going to use and how.
 
-##### Transmission
+#### Transmission
 
 There are two message types in the transmission phase: the request,
 and the reply.  The
@@ -131,7 +102,7 @@ handle as was sent by the client in the corresponding request.  In
 this way, the client can correlate which request is receiving a
 response.
 
-###### Ordering of messages and writes
+##### Ordering of messages and writes
 
 The server MAY process commands out of order, and MAY reply out of
 order, except that:
@@ -152,7 +123,29 @@ order, except that:
   `NBD_CMD_FLAG_FUA` will not be set on any commands sent to the server
   by the client.
 
-###### Request message
+`NBD_CMD_FLUSH` is modelled on the Linux kernel empty bio with
+`REQ_PREFLUSH` set. `NBD_CMD_FLAG_FUA` is modelled on the Linux
+kernel bio with `REQ_FUA` set.
+
+> Many storage devices, especially in the consumer market, come with volatile
+write back caches.  That means the devices signal I/O completion to the
+operating system before data actually has hit the non-volatile storage.  This
+behavior obviously speeds up various workloads, but it means the operating
+system needs to force data out to the non-volatile storage when it performs
+a data integrity operation like fsync, sync or an unmount.<br><br>
+The Linux block layer provides two simple mechanisms that let filesystems
+control the caching behavior of the storage device.  These mechanisms are
+a forced cache flush, and the Force Unit Access (FUA) flag for requests.<br><br>
+The REQ_PREFLUSH flag can be OR ed into the r/w flags of a bio submitted from
+the filesystem and will make sure the volatile cache of the storage device
+has been flushed before the actual I/O operation is started.  This explicitly
+guarantees that previously completed write requests are on non-volatile
+storage before the flagged bio starts.<br><br>
+The REQ_FUA flag can be OR ed into the r/w flags of a bio submitted from the
+filesystem and will make sure that I/O completion for this request is only
+signaled after the data has been committed to non-volatile storage.
+
+##### Request message
 
 The request message, sent by the client, looks as follows:
 
@@ -164,7 +157,7 @@ C: 64 bits, offset (unsigned)
 C: 32 bits, length (unsigned)  
 C: (*length* bytes of data if the request is of type `NBD_CMD_WRITE`)  
 
-###### Reply message
+##### Reply message
 
 The reply message MUST be sent by the server in response to all
 requests (save for `NBD_CMD_DISC`). The message looks as
