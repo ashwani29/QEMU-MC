@@ -28,17 +28,27 @@ sudo apt install nfs-common
 ```
 
 ## NBD
-### NBD Server
-```
-sudo apt-get install nbd-server
-```
+The Network Block Device is a Linux-originated lightweight block access
+protocol that allows one to export a block device to a client. While the
+name of the protocol specifically references the concept of block
+devices, there is nothing inherent in the *protocol* which requires that
+exports are, in fact, block devices; the protocol only concerns itself
+with a range of bytes, and several operations of particular lengths at
+particular offsets within that range of bytes.
 
-#### SYNOPSIS
-```
-nbd-server port filename [ -r ] [ -c ] [ -C config file ]
-```
+For matters of clarity, in this document we will refer to an export from
+a server as a block device, even though the actual backing on the server
+need not be an actual block device; it may be a block device, a regular
+file, or a more complex configuration involving several files. That is
+an implementation detail of the server.
 
-#### OPTIONS
+### Setup
+#### NBD Server
+**Synopsis**
+```
+hermes:~# nbd-server port filename [ -r ] [ -c ] [ -C config file ]
+```
+**Options**
 ```
 port   The port the server should listen to.
 
@@ -52,41 +62,29 @@ filename
 
 -C     Specify configuration file. The default configuration file, if this parameter is not specified, is /etc/nbd-server/config.
 ```
-#### EXAMPLES
+**Example**
 ```
 hermes:~# mkdir /exports
 hermes:~# dd if=/dev/zero of=/exports/nbd-export bs=1024 count=100000
-
 hermes:~# mke2fs nbd-export
 /exports/nbd-export is not a special block device.
 Proceed anyway? (y,n) y
-
 hermes:~# nbd-server 5000 /exports/nbd-export
 ```
 
-### NBD Client
-```
-sudo apt-get install nbd-client
-```
-
-#### SYNOPSIS
+#### NBD Client
+**Synopsis**
 ```
 nbd-client host [ port ] nbd-device
 ```
-
-#### OPTIONS
+**Options**
 ```
 nbd-device
        The block special file this nbd-client should connect to.
 ```
-
-#### EXAMPLES
-To connect to a server running on port 5000 at host "server.domain.com", using the client's block special file "/dev/nbd0":
+**Example**
 ```
 hermes:~# nbd-client server.domain.com 5000 /dev/nbd0
-```
-Then
-```
 hermes:~# mount /dev/nbd0 /mnt
 hermes:~# ls /mnt
 lost+found
