@@ -47,22 +47,3 @@ mv db_bench_sqlite3 ../db_bench_sqlite3
 mv db_bench_tree_db ../db_bench_tree_db
 
 popd
-
-# The Bourne Again Shell allows you to store a list of directories you are working with,
-# enabling you to move easily among with. This list is referred to as a stack. It is
-# analogous to a stack of dinner plates: You typically add plates to and remove plates from
-# the top of the stack, creating a last-in first-out, (LIFO) stack.
-# dirs: Displays the stack
-# The dirs builtin displays the content of the directory stack. If you call dirs when the
-# directory is empty, it displays the name of the working displays:
-# $ dirs
-# ~/literature
-# The dirs builtin uses a tilde (~) to represent the name of the home directory.
-# pushd: Pushes a directory on the stack
-# To change directories and at the same tilde add a new directory to the top of the stack,
-# use the pushd (push directory) builtin. In addition to changing directories, the pushd
-# builtin displays the contents of the stack.
-# popd: Pops a directory off the stack
-# To remove a directory from the stack, use the popd (pop directory) builtin. popd used
-# without an argument removes the top directory from the stack and changes the working
-# directory to the new top directory.
