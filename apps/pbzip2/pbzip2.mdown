@@ -1,0 +1,18 @@
+## Parallel BZIP2
+The method of processing multiple blocks of data simultaneously with the BWT algorithm was implemented.
+
+### Sequential bzip2
+The bzip2 program processes data in blocks ranging from 100000 bytes to 900000 bytes in size, depending on command line switches. The default block size is 900000 bytes. It reads in data 5000 bytes at a time, until enough data to fill a block is obtained. It then process the block with the BWT algorithm and write the compressed output to disk. This continues until the entire set of data is processed.
+
+![BZIP2 flow diagram](bzip2.png)
+
+Since bzip2 is a sequential program, it will only start processing the next block after the previous one has been completed.
+
+### pbzip2
+For pbzip2 to achieve speedup on parallel machines, a multi-threaded design was created using pthreads in C++.
+
+The pbzip2 program also works by splitting the data into blocks of equal size, configurable by the user on the command line. Instead of reading in 5000 bytes at a time, pbzip2 reads in an entire block at once which increases performance slightly, even with a single processor. The user can also specify the number processors for pbzip2 to use during compression (default is two). The final argument pbzip2 needs on the command line is the file to compress.
+
+A FIFO (first in, first out) queue system is used in pbzip2 with a producer/consumer model. The size of the queue is set to the number of processors pbzip2 was configured to use. This gives a good balance between speed and amount of memory required to run. Setting the queue size larger than the number of processors did not result in any speedup but significantly increased the amount memory required to run. If the default block size of 9000000 bytes is used and the number of processors requested was two, pbzip2 will read the first two blocks of 900000 bytes from the input file and insert the pointers those buffers into the FIFO queue. Since pbzip2 is using two processors, two consumer threads are created. Mutexes are used to protect the queue so only one thread can read from or modify the queue at a time. As soon as the queue is populated, the consumer threads will remove items from the queue and process the data using the BWT algorithm. Once the data is processed, the memory for the original block is released and the pointer to the compressed block along with the block number is stored in a global table. A file writing thread is also created which will go through the global table and write the compressed blocks to the output file in the correct order. Once free space in the queue is available, more blocks of data will be read from the file and added to the queue. This process continues all blocks have been read, at which point a global variable is set to notify all the threads that file has been read in its entirety. The consumer threads will continue to process the data blocks until the queue is empty and there are no more blocks going to be added to the queue. The pbzip2 program finishes when the file writing thread has finished writing all the compressed blocks to the output file in their correct order.
+
+![PBZIP2 flow diagram](pbzip2.png)
