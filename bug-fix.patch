@@ -1,0 +1,16 @@
+diff -ruN qemu/migration/ram.c qemu-modified/migration/ram.c
+--- qemu/migration/ram.c	2017-07-30 23:26:26.532173949 +0800
++++ qemu-modified/migration/ram.c	2017-08-01 16:27:48.742306835 +0800
+@@ -952,6 +952,12 @@
+         offset = migration_bitmap_find_and_reset_dirty(mr, offset);
+         if (complete_round && block == last_seen_block &&
+             offset >= last_offset) {
++            /* In the case that last_seen_block is NULL and there is no
++             * dirty block, we will loop infinitely along the ram_list.blocks
++             * list to find next dirty block because we can't identify that
++             * we have iterated all the blocks.
++             *
++             */
+             break;
+         }
+         if (offset >= block->used_length) {
