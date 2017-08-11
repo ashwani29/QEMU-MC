@@ -1,15 +1,37 @@
-diff -ruN qemu/migration/ram.c qemu-modified/migration/ram.c
---- qemu/migration/ram.c	2017-07-30 23:26:26.532173949 +0800
-+++ qemu-modified/migration/ram.c	2017-08-01 17:28:24.942260863 +0800
-@@ -952,6 +952,11 @@
-         offset = migration_bitmap_find_and_reset_dirty(mr, offset);
-         if (complete_round && block == last_seen_block &&
-             offset >= last_offset) {
-+            /* In the case that last_seen_block is NULL and there is no
-+             * dirty block, we will loop infinitely along the ram_list.blocks
-+             * list to find next dirty block because we can't identify that
-+             * we have iterated all the blocks.
+--- qemu/migration/ram.c	2017-08-11 14:53:14.847840561 +0800
++++ qemu--modified/migration/ram.c	2017-08-11 15:03:11.819828472 +0800
+@@ -944,8 +944,14 @@
+     int pages = 0;
+     MemoryRegion *mr;
+ 
+-    if (!block)
++    if (!block) {
+         block = QLIST_FIRST_RCU(&ram_list.blocks);
++        /* In MicroCheckpointing, if last_seen_block is NULL and
++         * there is no drity block, we will loop infinitely along
++         * the ram_list.blocks list to find next dirty block
++         * because we can't identify that we have iterated all the blocks.
++         */
++    }
+ 
+     while (true) {
+         mr = block->mr;
+
+--- qemu/migration/rdma.c	2017-08-11 14:53:14.847840561 +0800
++++ qemu--modified/migration/rdma.c	2017-08-11 15:05:07.091826137 +0800
+@@ -1512,8 +1512,14 @@
+ 
+         clear_bit(chunk, block->transit_bitmap);
+ 
+-        if (rdma->nb_sent > 0) {
++        if (lc->nb_sent > 0) {
+             rdma->nb_sent--;
++            lc->nb_sent--;
++            /*
++             * The source will freeze after calling ibv_get_cq_event() because
++             * there is no more WR in queue. This is caused by the improper
++             * maintainance of RDMALocalContext.nb_sent.
 +             */
-             break;
          }
-         if (offset >= block->used_length) {
+ 
+         /*
