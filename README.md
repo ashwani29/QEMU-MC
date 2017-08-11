@@ -48,8 +48,6 @@ Regardless, the current strategy taken will be:
 
 MC serializes the actual RAM page contents in such a way that the actual pages are separated from the meta-data (all the QEMUFile stuff).
 
-This is done strictly for the purposes of being able to use RDMA and to replace memcpy() on the local machine for hardware with very fast RAM memory speeds.
-
 This serialization requires recording the page descriptions and then pushing them into slabs after the checkpoint has been captured (minus the page data).
 
 Enable the following in checkpoint.c to enter debug mode
