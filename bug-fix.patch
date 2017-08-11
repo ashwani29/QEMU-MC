@@ -1,6 +1,6 @@
 --- qemu/migration/ram.c	2017-08-11 14:53:14.847840561 +0800
-+++ qemu--modified/migration/ram.c	2017-08-11 15:03:11.819828472 +0800
-@@ -944,8 +944,14 @@
++++ qemu-modified/migration/ram.c	2017-08-11 15:10:03.387820137 +0800
+@@ -944,8 +944,15 @@
      int pages = 0;
      MemoryRegion *mr;
  
@@ -12,13 +12,14 @@
 +         * the ram_list.blocks list to find next dirty block
 +         * because we can't identify that we have iterated all the blocks.
 +         */
++        last_seen_block = block;
 +    }
  
      while (true) {
          mr = block->mr;
 
 --- qemu/migration/rdma.c	2017-08-11 14:53:14.847840561 +0800
-+++ qemu--modified/migration/rdma.c	2017-08-11 15:05:07.091826137 +0800
++++ qemu-modified/migration/rdma.c	2017-08-11 15:11:18.975818607 +0800
 @@ -1512,8 +1512,14 @@
  
          clear_bit(chunk, block->transit_bitmap);
