@@ -114,6 +114,9 @@ mc: transaction: recv: ACK (304)
 mc: Memory transfer complete.
 ```
 
+#### RDMA Integration
+In order to resume VM execution as fast as possible, the checkpoint is copied consistently locally into a staging area before transmission. A standard memcpy() of potentially such a large amount of memory not only gets no use out of the CPU cache but also potentially clogs up the CPU pipeline which would otherwise be useful by other neighbor VMs on the same physical node that could be scheduled for execution. To minimize the effect on neighbor VMs, we use RDMA to perform a "local" memcpy(), bypassing the host processor.
+
 ### Usage
 #### BEFORE Running
 Network setup
