@@ -51,10 +51,10 @@ if __name__ == "__main__":
     #
     #     Depending on the command line options, each transaction may
     #     contain the following statements:
-    #     ·   UPDATEs on index column
-    #     ·   UPDATEs on non-index column
-    #     ·   DELETE queries
-    #     ·   ...
+    #     - UPDATEs on index column
+    #     - UPDATEs on non-index column
+    #     - DELETE queries
+    #     - ...
 
     cmd += " --mysql-engine-trx=yes"
     cmd += " --mysql-table-engine=InnoDB"
