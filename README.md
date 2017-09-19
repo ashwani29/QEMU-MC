@@ -162,7 +162,7 @@ cheng@cheng-HP-Compaq-Elite-8300-SFF:~$ sudo qemu/x86_64-softmmu/qemu-system-x86
 Enable MC like this:  
 QEMU Monitor Command:
 ```
-migrate_set_capability mc on # disabled by default
+(qemu) migrate_set_capability mc on # disabled by default
 ```
 Currently, only one network interface is supported, \*and\* currently you must ensure that the root 
 disk of your VM is booted either directly from iSCSI or NFS, as described previously. This will be 
@@ -173,19 +173,19 @@ Current required until testing is complete. There are some COLO disk replication
 but they don't work yet, so you have to explicitly set this:  
 QEMU Monitor Command:
 ```
-migrate_set_capability mc-disk-disable on # disk replication activated by default
+(qemu) migrate_set_capability mc-disk-disable on # disk replication activated by default
 ```
 Next, you can optionally disable network-buffering for additional test-only execution. This is useful if you 
 want to get a breakdown only of what the cost of checkpointing the memory state is without the cost of checkpointing 
 device state.  
 QEMU Monitor Command:
 ```
-migrate_set_capability mc-net-disable on # buffering activated by default
+(qemu) migrate_set_capability mc-net-disable on # buffering activated by default
 ```
 Additionally, you can tune the checkpoint frequency. By default it is set to checkpoint every 100 milliseconds. You can change that at any time, like this:  
 QEMU Monitor Command:
 ```
-migrate-set-mc-delay 100 # checkpoint every 100 milliseconds
+(qemu) migrate-set-mc-delay 100 # checkpoint every 100 milliseconds
 ```
 #### libnl / NETLINK compatibility
 Unfortunately, You cannot just install any version of libnl, as we depend on a recently introduced feature from 
@@ -224,12 +224,14 @@ wang@wang-HP-Compaq-Elite-8300-SFF:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_6
 MC can be initiated with exactly the same command as standard live migration:  
 QEMU Monitor Command:
 ```
-migrate tcp:147.8.179.243:6666
+(qemu) migrate tcp:147.8.179.243:6666
 
-help migrate
+(qemu) help migrate
 migrate [-d] [-b] [-i] uri -- migration to URI (using -d to not wait for completion)
                          -b for migration without shared storage with full copy of disk
 
-info migrate ##show migration status
-info status ##show the current VM status (running|paused)
+(qemu) info migrate ##show migration status
+(qemu) info status ##show the current VM status (running|paused)
+(qemu) help trace-event
+trace-event name on|off -- changes status of a specific trace event
 ```
