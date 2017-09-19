@@ -4,6 +4,16 @@
 Measures TCP Achievable Bandwidth
 
 ## Example Iperf TCP Invocation
+```
+$ iperf -h
+Usage: iperf [-s|-c host] [options]
+
+Server or Client:
+-b, --bandwidth #[KMG][/#] target bandwidth in bits/sec (0 for unlimited)
+                          (default 1 Mbit/sec for UDP, unlimited for TCP)
+                          (optional slash and packet count for burst mode)
+```
+
 Server (receiver):
 ```
 $ iperf -s
