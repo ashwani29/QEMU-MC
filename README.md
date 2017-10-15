@@ -156,7 +156,7 @@ HP-Compaq-Elite-8300-SFF:~$ sudo mount 202.45.128.160:/ubuntu /local/ubuntu
 
 Next, start the VM that you want to protect using your standard procedures.
 ```
-cheng@cheng-HP-Compaq-Elite-8300-SFF:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 /local/ubuntu/tmpOchCrp.qcow2 -m 2048 -smp 4 --enable-kvm -netdev tap,id=net0,ifname=tap0,script=/etc/qemu-ifup,downscript=no -device e1000,netdev=net0,mac=18:66:da:03:15:b1
+cheng@cheng-HP-Compaq-Elite-8300-SFF:~$ sudo x86_64-softmmu/qemu-system-x86_64 -boot c -drive file=/images/xpbase.qcow2,if=virtio -m 2048 -smp 4 --enable-kvm -netdev type=tap,script=/etc/qemu-ifup,id=net0 -device virtio-net-pci,netdev=net0,mac=18:66:da:03:15:b1
 ```
 
 Enable MC like this:  
@@ -175,7 +175,7 @@ QEMU Monitor Command:
 ```
 (qemu) migrate_set_capability mc-disk-disable on # disk replication activated by default
 ```
-Next, you can optionally disable network-buffering for additional test-only execution. This is useful if you 
+Next, you can optionally disable network-buffering for additional test-only execution. This is useful if you sudo x86_64-softmmu/qemu-system-x86_64 -boot c -drive file=/images/xpbase.qcow2,if=virtio -m 2048 -smp 4 --enable-kvm -netdev type=tap,script=/etc/qemu-ifup,id=net0 -device virtio-net-pci,netdev=net0,mac=18:66:da:03:15:b1
 want to get a breakdown only of what the cost of checkpointing the memory state is without the cost of checkpointing 
 device state.  
 QEMU Monitor Command:
@@ -218,7 +218,7 @@ cheng@cheng-HP-Compaq-Elite-8300-SFF:~$ sudo tc filter add dev tap0 parent ffff:
 ```
 Start the VM on the backup host
 ```
-wang@wang-HP-Compaq-Elite-8300-SFF:~$ sudo qemu/x86_64-softmmu/qemu-system-x86_64 /local/ubuntu/tmpOchCrp.qcow2 -m 2048 -smp 4 --enable-kvm -netdev tap,id=net0,ifname=tap0,script=/etc/qemu-ifup,downscript=no -device e1000,netdev=net0,mac=18:66:da:03:15:b1 -incoming tcp:0:6666
+wang@wang-HP-Compaq-Elite-8300-SFF:~$ sudo x86_64-softmmu/qemu-system-x86_64 -boot c -drive file=/images/xpbase.qcow2,if=virtio -m 2048 -smp 4 --enable-kvm -netdev type=tap,script=/etc/qemu-ifup,id=net0 -device virtio-net-pci,netdev=net0,mac=18:66:da:03:15:b1 -incoming tcp:0:6666
 ```
 
 MC can be initiated with exactly the same command as standard live migration:  
