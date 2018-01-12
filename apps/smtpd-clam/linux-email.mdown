@@ -12,6 +12,13 @@ New messages can arrive into the Postfix system in three ways. The most common w
 
 The third way in which a message can arrive is via local submission with the `sendmail` program.
 
+When `smtpd`, `qmqpd`, or `pickup` receives a new message, it hands it to the `cleanup` daemon. This daemon enforces restrictions on the message's size, acts on any content restrictions configured by the user, rewrites sender and/or recipient addresses as required by the configuration, adds any required headers that are missing, and does a few other things.
+
+#### Scheduling message deliveries
+The **queue manager**, `qmgr`, is responsible for scheduling the delivery of the messages. To decide how a message should be delivered to each recipient (namely the delivery method and the next destination), `qmgr` gets help from `trivial-rewrite`. The queue manager requests delivery agent processes from the `master` daemon and collects the results from the deliveries.
+
+The queue manager uses a number of directories for different purposes. The incoming queue is monitored for new messages, and the next stop is the **active queue**. The active queue contains the messages that are ready for delivery and are waiting to be dispatched to a delivery agent. If a delivery attempt fails, the message is moved to the **deferred queue**. That queue will be scanned periodically and, if it is time to retry the delivery of a message, the queue file for the message will be moved back into the active queue.
+
 #### Message delivery
 Postfix comes with a number of delivery agents that are used to deliver messages using various means and protocols. The delivery agents are the last daemons that touch the messages before they leave your system.
 
