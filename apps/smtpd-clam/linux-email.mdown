@@ -1,0 +1,203 @@
+## Linux and E-mail Basics
+### Mail e-mail protocols - SMTP, POP, and IMAP
+#### The SMTP protocol
+SMTP is a line-oriented text protocol that runs over TCP, which makes it trivial to decode SMTP transcripts and to initiate SMTP sessions using the regular telnet client found on just about any computer. An SMTP client starts a session by connecting to port 25 on the SMTP server. After the server has greeted the client, the client must respond by saying hello, or actually `HELO` or `EHLO`, followed by the client's hostname. If the server accepts the cordial greeting, the client may begin the first mail transaction.
+
+## Setting up Postfix
+### Postfix architecture: An overview
+![](postfix-arch.png)
+
+#### New message arrival
+New messages can arrive into the Postfix system in three ways. The most common way is, of course, via the `Simple Mail Transfer Protocol (SMTP)`. The daemon responsible for receiving messages via SMTP is named `smtpd`.
+
+The third way in which a message can arrive is via local submission with the `sendmail` program.
+
+#### Message delivery
+Postfix comes with a number of delivery agents that are used to deliver messages using various means and protocols. The delivery agents are the last daemons that touch the messages before they leave your system.
+
+The Postfix SMTP client, `smtp` (not to be confused with the SMTP server, `smtpd`), is used to deliver messages to other hosts via the SMTP protocol.
+
+### Installation and basic configuration
+#### Getting Postfix up and running
+##### Domains and hostnames
+Before starting Postfix, let's review some fundamental settings in `main.cf`. The first ones concern the names of your domain and your mailhost. The mydomain parameter should be set to your main Internet domain. If you run Example Inc. having the domain `http://www.example.com/`, the following setting would be reasonable:
+```
+mydomain = example.com
+```
+The value of `mydomain` will affect how Postfix transforms hostnames that are not fully qualified. This means that all bare hostnames encountered in places such as sender and recipient addresses will be qualified with this domain-a hostname such as `jeeves` will, in this case, be turned into `jeeves.example.com`.
+
+A related parameter is `myhostname` that incidentally tells Postfix the hostname of the machine. The hostname is among other things used as default when the Postfix SMTP server greets a client and when the SMTP client says HELLO to a server. Postfix is normally able to determine this by itself, but sometimes you want to override this. Use the `postconf` command to see if the current value looks good.
+```
+$ postconf myhostname
+myhostname = jeeves
+```
+
+A parameter that is related to `mydomain` is `myorigin`. This parameter specifies the domain that should be used to qualify e-mail addresses that have no domain part at all. This may seem highly irregular, but it is actually pretty common. Messages submitted with the `sendmail` program will by default get the current username as the sender address and, because usernames do not have domains, the username will be qualified with `myorigin` before the message is delivered anywhere. By default, `myorigin` is set to the same value as `myhostname`.
+```
+$ postconf –d myorigin
+myorigin = $myhostname
+```
+The next parameter that we will give attention to is `mydestination`. This parameter is quite important because it tells Postfix which domains are considered local, that is, which domains should be delivered to UNIX accounts on this machine. Unlike `mydomain` and `myorigin`, `mydestination` may contain multiple domains separated by space or commas. By listing `example.com` here, Postfix will accept messages addressed to `joe@example.com` and deliver them to the UNIX user "joe".
+
+##### Choosing mailbox format for local deliveries
+By default, Postfix delivers local messages (messages to domains listed in `mydestination`) into files in `mbox` format. The `mbox` format for mailboxes stores all messages of a mailbox in a single text file. These files are named after the user and go into the directory specified by `mail_spool_directory` (normally `/var/mail` or `/var/spool/mail`).
+
+##### Starting Postfix and sending the first message
+With these settings in place, it is time to start Postfix. Use the following Postfix command to do this:
+```
+$ postfix start
+postfix/postfix-script: starting the Postfix mail system
+```
+To verify that Postfix is running, take a look in the log file. Postfix logs via the standard `syslog` interface, and the exact location of the log files depends on the `syslog` daemon configuration. The mail logs will typically be named `/var/log/maillog`, `/var/log/mail.info`, or something similar.
+
+## Antivirus Protection
+### Downloading and installing ClamAV
+#### Installing from a package
+If you are using a Debian-based system, the installation may be performed using the
+following command:
+```
+# apt-get install clamav clamav-daemon clamav-freshclam
+```
+### Editing the config files
+#### clamd
+##### Examining the sample config file
+```
+# The daemon works in a local OR a network mode. Due to security
+# reasons we recommend the local mode.
+
+# Path to a local socket file the daemon will listen on.
+# Default: disabled
+LocalSocket /var/run/clamav/clamd.sock
+```
+Using local mode is an important configuration change and is required to ensure the security of the system on which ClamAV is installed.
+
+### Post installation testing
+#### EICAR test virus
+A number of antivirus researchers have already worked together to produce a file that their (and many other) products detect as if it were a virus. Agreeing on one file for such purposes simplifies matters for users.
+
+This test file is known as the **EICAR (European Institute for Computer Anti-virus Research) standard antivirus test file**. The file itself is not a virus, it does not contain any program code at all, and is therefore safe to pass on to other people. However, most antivirus products will react to the file as though it really is a virus, which can make it a rather tricky file to manipulate or send via e-mail if you or the recipient has good virus protection systems in place.
+
+The file is a text file consisting entirely of printable ASCII characters so that it can easily be created with a regular text editor. Any antivirus product that supports the EICAR test file should detect it in any file that starts with the following 68 characters:
+```
+X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+```
+#### Testing clamd
+By using the `clamdscan` program, we can again scan the test file, but do this by instructing the `clamd` process to do the scanning. This is an excellent test to make sure that the `clamd` daemon process is running.
+
+The expected output should look something like the following:
+```
+$ clamdscan testvirus.txt
+    /home/ian/testvirus.txt: Eicar-Test-Signature FOUND
+    ----------- SCAN SUMMARY -----------
+    Infected files: 1
+    Time: 0.000 sec (0 m 0 s)
+```
+
+### Introduction to ClamSMTP
+#### Configuring into Postfix
+The first configuration option requires adding lines to the Postfix `main.cf` file:
+```
+content_filter = scan:127.0.0.1:10025
+```
+The `content_filter` instruction forces Postfix to send all mail through the service named `scan` on port `10025`. The scan service will be the one that we set up using `clamsmtpd`.
+
+The second configuration change needs to be made to the Postfix `master.cf` file.
+```
+# AV scan filter (used by content_filter)
+scan      unix  -       -       n       -       16      smtp
+        -o smtp_send_xforward_command=yes
+        -o smtp_enforce_tls=no
+# For injecting mail back into postfix from the filter
+127.0.0.1:10026 inet  n -       n       -       16      smtpd
+        -o content_filter=
+        -o receive_override_options=no_unknown_recipient_checks,no_header_body_checks
+        -o smtpd_helo_restrictions=
+        -o smtpd_client_restrictions=
+        -o smtpd_sender_restrictions=
+        -o smtpd_recipient_restrictions=permit_mynetworks,reject
+        -o mynetworks_style=host
+        -o smtpd_authorized_xforward_hosts=127.0.0.0/8
+```
+The first two lines, do the actual creation of the `scan` service. The remaining lines set up a service for accepting mail back into Postfix for delivery. The rest of the options are there to prevent a mail loop occurring and to relax address checking. When these changes have been made, you need to get Postfix to reread the modified configuration files by using the following command:
+```
+# postfix reload
+```
+
+#### Configuring clamSMTP
+You have to create the configuration file, `/etc/clamsmtpd.conf`, otherwise `clamsmtpd` won't run:
+```
+$ clamsmtpd
+clamsmtpd: configuration file not found: /etc/clamsmtpd.conf
+```
+A sample `clamsmtp.conf` configuration file is included in the source distribution `doc` directory. This needs to be copied to the correct location and edited before the `clamsmtp` software will operate correctly.
+```
+# cp clamsmtpd.conf /etc/clamsmtpd.conf
+```
+##### Examining the sample config file
+The sample config file that is provided is very well documented with comments for each significant configuration value. Here are some key values that you may wish to modify.
+```
+# The address to send scanned mail to. 
+# This option is required unless TransparentProxy is enabled
+OutAddress: 127.0.0.1:10026
+```
+As we are using just one machine in this configuration, we should specify the `OutAddress` option as `127.0.0.1:10026` to match the option specified in `master.cf`.
+```
+# The maximum number of connection allowed at once.
+# Be sure that clamd can also handle this many connections
+#MaxConnections: 64
+
+# Amount of time (in seconds) to wait on network IO
+#TimeOut: 180
+
+# Keep Alives (ie: NOOP's to server)
+KeepAlives: 0
+
+# Send XCLIENT commands to receiving server
+#XClient: off
+
+# Address to listen on (defaults to all local addresses on port 10025)
+#Listen: 0.0.0.0:10025
+```
+This address matches the option specified in `main.cf`.
+```
+# The address clamd is listening on
+#ClamAddress: /var/run/clamav/clamd.sock
+```
+This should match the `LocalSocket` option in the `clamd.conf` file.
+```
+# A header to add to all scanned email
+#Header: X-Virus-Scanned: ClamAV using ClamSMTP
+
+# Directory for temporary files
+#TempDirectory: /tmp
+
+# What to do when we see a virus (use 'bounce' or 'pass' or 'drop'
+Action: drop
+```
+Throw away the message.
+
+If you have problems starting the service, make sure that the `clamd` (the ClamAV daemon) is running, and that it is listening on the socket you specified. You can set this in `clamd.conf` using the `LocalSocket` or `TCPSocket` directives (be sure that you only uncomment one of those lines). You should also make sure that the `ScanMail` directive is set to on.
+
+### Testing e-mail filtering
+#### Testing mail-borne virus filtering
+The first step is to check that you can still receive mail.
+```
+$ echo "Clean mail" | sendmail $USER
+```
+You should receive your mail with the addition of the following line in the header:
+```
+X-Virus-Scanned: ClamAV using ClamSMTP
+```
+If you did not receive the mail, check the system, postfix, and clamd log files. If necessary, you can also stop and restart the `clamsmtpd` daemon with the `-d 4` option for extra debugging output.
+
+The second simple test of scanning for mail-borne viruses can be performed by simply sending yourself a copy of the EICAR virus as an e-mail attachment.
+
+The sample EICAR virus file must be created as an attachment to an e-mail. The following command chain from the Linux command prompt will send a very simple uuencoded attachment copy of the virus-infected file.
+```
+$ uuencode testvirus.txt test_virus | sendmail $USER
+```
+If everything is working and configured correctly, you should not receive the mail, as `clamsmtp` was instructed to drop the message. The absence of the message does not prove everything is working, so check the system or postfix log files for an entry similar to the following:
+```
+Jul 8 19:38:57 ian postfix/smtp[6873]: 26E66F42CB: to=<ian@example.com>, orig_to=<ian>, relay=127.0.0.1[127.0.0.1]:10025, delay=0.1, delays=0.06/0/0.04/0, dsn=2.0.0, status=sent (250 Virus Detected; Discarded Email)
+```
+This proves the simple case of detecting a straightforward attachment containing a virus.
